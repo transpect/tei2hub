@@ -37,6 +37,10 @@
     <xsl:attribute name="role" select="."/>
   </xsl:template>
   
+  <xsl:template match="@* | node()" mode="css:unhandled" priority="-1.5">
+    <xsl:value-of select="local-name()"/>
+  </xsl:template>
+
   <xsl:template match="*" mode="tei2hub" priority="-0.25">
     <xsl:message>tei2hub: unhandled: <xsl:apply-templates select="." mode="css:unhandled"/> </xsl:message>
     <xsl:copy>
@@ -62,11 +66,17 @@
   <xsl:template match="@xml:lang | @lang" mode="tei2hub">
      <xsl:attribute name="xml:lang" select="." />
   </xsl:template>
+
+  <xsl:template match="/*/@source-dir-uri" mode="tei2hub"/>
+  
+  <xsl:template match="/*/@css:rule-selection-attribute" mode="tei2hub">
+    <xsl:attribute name="{name()}" select="'role'" />
+  </xsl:template>
   
   <xsl:template match="/*/@*[name() = ('version')]" mode="tei2hub">
     <xsl:attribute name="version" select="'5.1-variant le-tex_Hub-1.2'" />
   </xsl:template>
-  
+
   <xsl:template match="/TEI" mode="tei2hub">
     <book>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
@@ -132,18 +142,19 @@
     </alt>
   </xsl:template>
   
-  <xsl:template match="table" mode="tei2hub">
-    <xsl:copy copy-namespaces="no">
+  <xsl:template match="table" mode="tei2hub" priority="3">
+    <xsl:element name="{if (head or caption or note) then 'table' else 'informaltable'}">
+      <xsl:apply-templates select="@* except (@rend, @rendition)" mode="#current"/>
       <xsl:if test="head or note">
         <caption>
           <xsl:apply-templates select="head, note" mode="#current"/>
         </caption>
       </xsl:if>
-      <table>
-        <xsl:apply-templates select="@* except (@rend, @rendition)" mode="#current"/>
-        <xsl:apply-templates select="@rendition, node()" mode="#current"/>
-      </table>
-    </xsl:copy>
+      <xsl:apply-templates select="@rendition, caption" mode="#current"/>
+      <tgroup cols="{count(colgroup/col)}">
+        <xsl:apply-templates select="thead, tbody, tfoot" mode="#current"/>
+      </tgroup>
+    </xsl:element>
   </xsl:template>
   
   <xsl:template match="table/postscript" mode="tei2hub" priority="2">
@@ -154,7 +165,7 @@
     <info><xsl:apply-templates select="@*, node()" mode="#current"/></info>
   </xsl:template>
   
-  <xsl:template match="text | fileDesc |textClass | profileDesc | docTitle | titleStmt | seriesStmt | publicationStmt | opener | encodingDesc | editionStmt/p | text/front | text/body | text/back | opener[idno]" mode="tei2hub">
+  <xsl:template match="text | fileDesc |textClass | profileDesc | docTitle | seriesStmt | publicationStmt | opener | encodingDesc | editionStmt/p | text/front | text/body | text/back | opener[idno]" mode="tei2hub">
     <xsl:apply-templates select="node()" mode="#current"/>
   </xsl:template>
   
@@ -197,10 +208,12 @@
     </xsl:element>
   </xsl:template>
 
-  <xsl:template match="publicationStmt/date[normalize-space()]" mode="tei2hub">
-    <pubdate>
+  <xsl:template match="publicationStmt/date" mode="tei2hub">
+    <xsl:if test="normalize-space()">
+      <pubdate>
         <xsl:apply-templates select="@*, node()" mode="#current"/>
-    </pubdate>
+      </pubdate>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template match="publicationStmt/publisher | titlePage/docImprint" mode="tei2hub">
@@ -216,31 +229,29 @@
     </publisher>
   </xsl:template>
 
-<!--  <xsl:template match="titleStmt" mode="tei2hub">
+  <xsl:template match="titleStmt" mode="tei2hub">
     <xsl:if test="editor">
-      <contrib-group>
+      <authorgroup>
         <xsl:apply-templates select="editor" mode="#current"/>
-      </contrib-group>
+      </authorgroup>
     </xsl:if>
     <xsl:if test="title[@type = 'main']">
-      <book-title-group>
-        <book-title>
+        <title>
           <xsl:value-of select="title[@type = 'main']"/>
-        </book-title>
+        </title>
         <xsl:if test="title[@type = 'sub']">
           <subtitle>
             <xsl:value-of select="title[@type = 'sub']"/>
           </subtitle>
         </xsl:if>
         <xsl:if test="title[@type = 'issue-title']">
-          <subtitle content-type="issue-title">
+          <subtitle role="issue-title">
             <xsl:value-of select="title[@type = 'issue-title']"/>
           </subtitle>
         </xsl:if>
-      </book-title-group>
     </xsl:if>
-    <!-\- needed for metadata. other information is retrieved differently -\->
-  </xsl:template>-->
+    <!-- needed for metadata. other information is retrieved differently -->
+  </xsl:template>
 
   <xsl:template match="seriesStmt/idno/@subtype" mode="tei2hub">
     <xsl:attribute name="role" select="."/>
@@ -274,10 +285,10 @@
     <xsl:attribute name="role" select="."/>
   </xsl:template>
 
-  <xsl:template match="css:rules" mode="tei2hub">
-      <xsl:copy>
-        <xsl:apply-templates select="node()" mode="#current"/>
-      </xsl:copy>
+  <xsl:template match="css:rules | css:rule" mode="tei2hub">
+    <xsl:copy>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </xsl:copy>
   </xsl:template>
   
  
@@ -290,14 +301,42 @@
   <xsl:template match="titlePage" mode="tei2hub"/>
   
   <xsl:variable name="frontmatter-parts" as="xs:string+"
-    select="('title-page', 'copyright-page', 'dedication', 'about-contrib', 'about-book', 'series', 'additional-info', 'motto', 'preface')"/>
+    select="('title-page', 'copyright-page', 'dedication', 'about-contrib', 'about-book', 'series', 'additional-info', 'motto')"/>
   
-  <xsl:template match="div[@type = $frontmatter-parts]" mode="tei2hub" priority="2">
+  <xsl:template match="div[@rend = $frontmatter-parts]" mode="tei2hub" priority="2">
     <colophon role="{@type}">
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </colophon>
   </xsl:template>
   
+  <xsl:template match="div[@type = 'appendix']" mode="tei2hub" priority="2">
+    <appendix>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </appendix>
+  </xsl:template>
+
+  <xsl:template match="div[@type = 'acknowledgements']" mode="tei2hub" priority="2">
+    <acknowledgements>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </acknowledgements>
+  </xsl:template>
+
+  <xsl:template match="divGen[@type = 'toc']" mode="tei2hub" priority="2">
+    <toc>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </toc>
+  </xsl:template>
+
+  <xsl:template match="divGen[@type = 'index']" mode="tei2hub" priority="2">
+    <index>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </index>
+  </xsl:template>
+
+  <xsl:template match="divGen[@type = 'index']/@subtype" mode="tei2hub" priority="2">
+      <xsl:attribute name="type" select="." />
+  </xsl:template>
+
 <!--  <xsl:template match="div[@type = 'dedication']" mode="tei2hub">
     <dedication book-part-type="{@type}">
       <xsl:call-template name="named-book-part-meta"/>
@@ -332,16 +371,16 @@
   </xsl:template>
 
   <xsl:template match="ref/@target | ptr/@target" mode="tei2hub" priority="2">
-    <xsl:attribute name="linkend" select="."/>
+    <xsl:attribute name="{if (starts-with(., '#')) then 'linkend' else 'xlink:href'}" select="replace(., '^#', '')"/>
   </xsl:template>
 
   
   <xsl:template match="docAuthor" mode="tei2hub">
     <xsl:choose>
       <xsl:when test="ancestor::*[self::title-page]">
-        <p>
+        <para>
           <xsl:apply-templates select="@*, node()" mode="#current"/>
-        </p>
+        </para>
       </xsl:when>
       <xsl:otherwise>
         <author>
@@ -390,16 +429,22 @@
     </toc>
   </xsl:template>
   
-  <xsl:template match="preface" mode="tei2hub">
-    <div role="preface">
+  <xsl:template match="preface | div[@type = 'preface'][matches(@rend, '^p_h')]" mode="tei2hub" priority="2">
+    <preface>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
-    </div>
+    </preface>
   </xsl:template>
   
-  <xsl:template match="add | emph | orig | date | unclear| orgName | placeName | state | seg | hi | underline" mode="tei2hub">
+  <xsl:template match="add | emph | orig | unclear| orgName | placeName | state | underline" mode="tei2hub">
     <xsl:element name="phrase">
       <xsl:attribute name="role" select="local-name()"/>
       <xsl:apply-templates select="@* except @rend, node()" mode="#current"/>
+    </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="seg | hi" mode="tei2hub">
+    <xsl:element name="phrase">
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
     </xsl:element>
   </xsl:template>
   
@@ -446,13 +491,19 @@
     </xsl:element>
   </xsl:template>
   
-  <xsl:template match="floatingText" mode="tei2hub">
+  <xsl:template match="floatingText[@type = 'marginal']" mode="tei2hub">
     <sidebar>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </sidebar>
   </xsl:template>
   
-  <xsl:template match="floatingText/front | floatingText/back | floatingText/body | floatingText/body/*[local-name() = ('div1', 'div2', 'div3', 'div4', 'div5')]" mode="tei2hub">
+  <xsl:template match="floatingText[not(@type = 'marginal')]" mode="tei2hub">
+    <div role="{@type}">
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </div>
+  </xsl:template>
+
+  <xsl:template match="floatingText/front | floatingText/back | floatingText/body | floatingText/body/*[local-name() = ('div', 'div1', 'div2', 'div3', 'div4', 'div5')]" mode="tei2hub" priority="2">
       <xsl:apply-templates select="node()" mode="#current"/>
    </xsl:template>
     
@@ -462,11 +513,12 @@
     </abstract>
   </xsl:template>
 
-  <xsl:variable name="structural-containers" as="xs:string+" select="('dedication', 'marginal', 'motto', 'part', 'article', 'chapter')"/>
+  <xsl:variable name="structural-containers" as="xs:string+" select="('dedication', 'marginal', 'motto', 'part', 'article', 'chapter', 'glossary')"/>
   <xsl:variable name="main-structural-containers" as="xs:string+" select="('part', 'article', 'chapter')"/>
 
   <!-- document structure -->
-  <xsl:template mode="tei2hub" match="div[not(@type = $structural-containers)] | *[matches(local-name(), 'div[1-9]')]">
+  <xsl:template mode="tei2hub" match="  div[not(@type = $structural-containers)]
+                                      | *[matches(local-name(), 'div[1-9]')]">
     <section>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </section>
@@ -518,7 +570,7 @@
     </epigraph>
   </xsl:template>
 
-  <xsl:template match="state/label" mode="tei2hub" priority="2">
+  <xsl:template match="state/label | seg/label" mode="tei2hub" priority="2">
     <xsl:apply-templates select="node()" mode="#current"/>
   </xsl:template>
   
@@ -546,6 +598,16 @@
     </variablelist>
   </xsl:template>
   
+  <xsl:template match="*:variablelist[*:term]" mode="clean-up" priority="2">
+    <xsl:copy copy-namespaces="no">
+      <xsl:for-each-group select="*" group-starting-with="*:term">
+        <xsl:element name="varlistentry">
+          <xsl:apply-templates select="current-group()" mode="#current"/>
+        </xsl:element>
+      </xsl:for-each-group>
+    </xsl:copy>
+  </xsl:template>
+
   <xsl:template match="list[@type eq 'gloss']/item[preceding-sibling::*[1][self::label]] | item[tei2hub:is-varlistentry(.)]" mode="tei2hub">
     <listitem>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
@@ -564,9 +626,9 @@
   </xsl:function>
   
   <xsl:template match="item[tei2hub:is-varlistentry(.)]/gloss" mode="tei2hub">
-    <p>
+    <para>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
-    </p>
+    </para>
   </xsl:template>
   
   <xsl:template match="list[@type= 'bulleted']" mode="tei2hub" priority="2">
@@ -602,6 +664,10 @@
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </anchor>
   </xsl:template>
+
+  <xsl:template match="anchor/@n" mode="tei2hub" priority="2">
+    <xsl:attribute name="annotations" select="."/>
+  </xsl:template>
   
   <xsl:template match="quote" mode="tei2hub">
     <blockquote>
@@ -624,9 +690,9 @@
   </xsl:template>
 
   <xsl:template match="p" mode="tei2hub">
-    <p>
+    <para>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
-    </p>
+    </para>
   </xsl:template>
   
   <xsl:template match="lb" mode="tei2hub">
@@ -639,11 +705,11 @@
     </figure>
   </xsl:template>
   
-<!--  <xsl:template match="figure/bibl[@type = 'copyright']" mode="tei2hub">
-    <copyright-statement>
+  <xsl:template match="figure/bibl[@type = 'copyright']" mode="tei2hub" priority="2">
+    <para>
       <xsl:apply-templates select="@* except @type, node()" mode="#current"/>
-    </copyright-statement>
-  </xsl:template>-->
+    </para>
+  </xsl:template>
 
   <xsl:template match="figure/note" mode="tei2hub">
     <note>
@@ -654,11 +720,19 @@
   <xsl:template match="graphic/@url" mode="tei2hub">
     <xsl:attribute name="fileref" select="."/>
   </xsl:template>
+
+  <xsl:template match="@indexName" mode="tei2hub">
+    <xsl:attribute name="type" select="."/> 
+  </xsl:template>
   
-  <xsl:template match="index" mode="tei2hub">
+  <xsl:template match="index[not(parent::*[self::index])]" mode="tei2hub">
     <indexterm>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </indexterm>
+  </xsl:template>
+
+  <xsl:template match="index[parent::*[self::index]]" mode="tei2hub">
+      <xsl:apply-templates select="node()" mode="#current"/>
   </xsl:template>
 
   <xsl:template match="index[not(parent::*[self::index])]/term" mode="tei2hub">
@@ -667,13 +741,13 @@
     </primary>
   </xsl:template>
   
-  <xsl:template match="index[not(parent::*[self::index])]/term/index/term" mode="tei2hub">
+  <xsl:template match="index[not(parent::*[self::index])]/index/term" mode="tei2hub">
     <secondary>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </secondary>
   </xsl:template>
 
-  <xsl:template match="index[not(parent::*[self::index])]/term/index/term/index/term" mode="tei2hub">
+  <xsl:template match="index[not(parent::*[self::index])]/index/index/term" mode="tei2hub">
     <tertiay>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </tertiay>
@@ -706,67 +780,75 @@
     </xsl:element>
   </xsl:template>
 
-  <xsl:template match="tbody | thead | tfoot | th | tr | td | colgroup | col" mode="tei2hub">
+  <xsl:template match="tbody | thead | tfoot | colgroup" mode="tei2hub">
     <xsl:element name="{local-name()}" exclude-result-prefixes="#all">
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </xsl:element>
   </xsl:template>
   
-  <xsl:template match="lg" mode="tei2hub">
-    <poetry>
+  <xsl:template match="td | th" mode="tei2hub">
+    <entry>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
-    </poetry>
+    </entry>
+  </xsl:template>
+
+  <xsl:template match="tr" mode="tei2hub">
+    <row>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </row>
+  </xsl:template>
+
+  <xsl:template match="col" mode="tei2hub">
+    <colspec>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </colspec>
+  </xsl:template>
+
+  <xsl:template match="lg" mode="tei2hub">
+    <div>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </div>
   </xsl:template>
   
   <xsl:template match="lg/l" mode="tei2hub">
-    <p>
+    <para>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
-    </p>
+    </para>
   </xsl:template>
   
- <!-- <xsl:template match="spGrp" mode="tei2hub">
-    <xsl:apply-templates select="node()" mode="#current"/>
+  <xsl:template match="spGrp" mode="tei2hub">
+    <div role="speech"><xsl:apply-templates select="node()" mode="#current"/></div>
   </xsl:template>
   
   <xsl:template match="sp" mode="tei2hub">
-    <speech>
-      <xsl:apply-templates select="@*, node()" mode="#current"/>
-    </speech>
+      <xsl:apply-templates select="node()" mode="#current"/>
   </xsl:template>
   
   <xsl:template match="stage" mode="tei2hub">
-    <p>
-      <xsl:call-template name="css:content">
-        <xsl:with-param name="root" select="$root" tunnel="yes" as="document-node()"/>
-      </xsl:call-template>
-    </p>
-  </xsl:template>-->
+    <para>
+    <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </para>
+  </xsl:template>
   
   <xsl:template match="speaker" mode="tei2hub">
-    <phrase role="speaker">
+    <para role="speaker">
       <xsl:apply-templates select="@* except @rend, node()" mode="#current"/>>
-    </phrase>
+    </para>
   </xsl:template>
   
   <xsl:template match="sp/l" mode="tei2hub">
-    <p>
+    <para>
      <xsl:apply-templates select="@*, node()" mode="#current"/>
-    </p>
+    </para>
   </xsl:template>
   
   <!-- TO DO: label handling-->
-  <xsl:template match="head[not(parent::*[self::table | self::figure])]" mode="tei2hub">
+  <xsl:template match="head" mode="tei2hub">
     <title>
        <xsl:apply-templates select="@*, node()" mode="#current"/>
     </title>
   </xsl:template>
   
-  <xsl:template match="head[parent::*[self::table | self::figure]]" mode="tei2hub">
-      <title>
-        <xsl:apply-templates select="@*, node()" mode="#current"/>
-      </title>
-  </xsl:template>
-
   <xsl:template match="head[@type = 'sub']" mode="tei2hub" priority="2">
     <subtitle>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
@@ -779,4 +861,32 @@
     </caption>
   </xsl:template>
   
+  <xsl:template match="*:sidebar/*:section | *:div/*:section " mode="clean-up">
+      <xsl:apply-templates select="node()" mode="#current"/>
+  </xsl:template>
+
+  <xsl:template match="*:part[*[not(self::*:info | self::title | self::*:subtitle | self::*:chapter)]] " mode="clean-up">
+    <xsl:copy copy-namespaces="no">
+      <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar][preceding-sibling::*[1][self::*:info | self::*:title | self::*:subtitle]] | *:chapter">
+        <xsl:choose>
+          <xsl:when test="current-group()[1][self::*:info | self::*:title | self::*:subtitle | self::*:chapter]">
+            <xsl:apply-templates select="current-group()" mode="#current"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:element name="partintro">
+              <xsl:apply-templates select="current-group()" mode="#current"/>
+            </xsl:element>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:for-each-group>
+    </xsl:copy>      
+  </xsl:template>
+
+
+  <xsl:template match="*:section[parent::*[self::*:section]]" mode="clean-up">
+    <xsl:element name="sect{count(ancestor::*:section)}">
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </xsl:element>      
+  </xsl:template>
+
 </xsl:stylesheet>

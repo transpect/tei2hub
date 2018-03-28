@@ -15,19 +15,16 @@
   <p:option name="debug" required="false" select="'no'"/>
   <p:option name="debug-dir-uri" required="false" select="'debug'"/>
   <p:option name="status-dir-uri" select="'status'"/>
-	<p:option name="filename-driver" required="false" select="'tei2hub/tei2hub-driver'"/>
+	<p:option name="filename-driver" required="false" select="'tei2hub/tei2hub'"/>
 	
   <p:input port="source" primary="true" />
+
   <p:input port="additional-inputs" sequence="true">
     <p:empty/>
   </p:input>
   <p:input port="paths" kind="parameter" primary="true"/>
 	
   <p:output port="result" primary="true" />
-  <p:serialization port="result" 
-    omit-xml-declaration="false"
-    doctype-public="-//NLM//DTD BITS Book Interchange DTD v2.0 20151225//EN"
-    doctype-system="https://jats.nlm.nih.gov/extensions/bits/2.0/BITS-book2.dtd" />
 
   <p:output port="report" sequence="true">
     <p:pipe port="report" step="dtp"/>

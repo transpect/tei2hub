@@ -27,13 +27,12 @@
 	<p:input port="stylesheet"/>
 
 	<p:output port="result" primary="true">
-    <p:pipe port="result" step="resort"/>
+    <p:pipe port="result" step="clean-up"/>
   </p:output>
 
   <p:output port="report" sequence="true">
     <p:pipe port="report" step="tei2hub"/>
     <p:pipe port="report" step="clean-up"/>
-    <p:pipe port="report" step="resort"/>
   </p:output>
 
 	<p:import href="http://xmlcalabash.com/extension/steps/library-1.0.xpl"/>
@@ -65,12 +64,8 @@
     <p:input port="stylesheet">
       <p:pipe step="tei2hub-driver" port="stylesheet"/>
     </p:input>
-    <p:with-option name="debug" select="$debug">
-      <p:empty/>
-    </p:with-option>
-    <p:with-option name="debug-dir-uri" select="$debug-dir-uri">
-      <p:empty/>
-    </p:with-option>
+    <p:with-option name="debug" select="$debug"/>
+    <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
   </tr:xslt-mode>
 
   <tr:xslt-mode prefix="tei2hub/75" mode="clean-up" name="clean-up">
@@ -80,12 +75,8 @@
     <p:input port="models">
       <p:empty/>
     </p:input>
-    <p:with-option name="debug" select="$debug">
-      <p:empty/>
-    </p:with-option>
-    <p:with-option name="debug-dir-uri" select="$debug-dir-uri">
-      <p:empty/>
-    </p:with-option>
+    <p:with-option name="debug" select="$debug"/>
+    <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
   </tr:xslt-mode>
 
   <p:delete match="@srcpath" name="drop-srcpaths"/>
