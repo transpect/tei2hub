@@ -810,7 +810,7 @@
     </div>
   </xsl:template>
   
-  <xsl:template match="lg/l" mode="tei2hub">
+  <xsl:template match="l" mode="tei2hub">
     <para>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </para>
@@ -836,11 +836,6 @@
     </para>
   </xsl:template>
   
-  <xsl:template match="sp/l" mode="tei2hub">
-    <para>
-     <xsl:apply-templates select="@*, node()" mode="#current"/>
-    </para>
-  </xsl:template>
   
   <!-- TO DO: label handling-->
   <xsl:template match="head" mode="tei2hub">
