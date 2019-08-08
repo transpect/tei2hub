@@ -773,7 +773,7 @@
 
   <xsl:template match="graphic" mode="tei2hub">
     <xsl:element name="{if (parent::*[self::figure]) then 'mediaobject' else 'inlinemediaobject'}">
-      <xsl:apply-templates select="@role, @srcpath, @css:*, @xml:id" mode="#current"/>
+      <xsl:apply-templates select="@rend, @srcpath, @css:*, @xml:id" mode="#current"/>
       <imageobject>
         <imagedata><xsl:apply-templates select="@url" mode="#current"/></imagedata>
       </imageobject>
