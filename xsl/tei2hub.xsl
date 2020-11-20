@@ -144,13 +144,13 @@
   
   <xsl:template match="table" mode="tei2hub" priority="3">
     <xsl:element name="{if (head or caption or note) then 'table' else 'informaltable'}">
-      <xsl:apply-templates select="@* except (@rend, @rendition)" mode="#current"/>
-      <xsl:if test="head or note">
+      <xsl:apply-templates select="@* except (@rend, @rendition), head" mode="#current"/>
+      <xsl:if test="caption or note">
         <caption>
-          <xsl:apply-templates select="head, note" mode="#current"/>
+          <xsl:apply-templates select="caption/node(), note" mode="#current"/>
         </caption>
       </xsl:if>
-      <xsl:apply-templates select="@rendition, caption" mode="#current"/>
+      <xsl:apply-templates select="@rendition" mode="#current"/>
       <tgroup cols="{count(colgroup/col)}">
         <xsl:apply-templates select="thead, tbody, tfoot" mode="#current"/>
       </tgroup>
@@ -701,6 +701,7 @@
   
   <xsl:template match="figure" mode="tei2hub">
     <figure>
+      <xsl:if test="not(head)"><title/></xsl:if>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </figure>
   </xsl:template>
