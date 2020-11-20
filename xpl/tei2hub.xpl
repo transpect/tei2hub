@@ -14,7 +14,7 @@
   <p:option name="srcpaths" required="false" select="'no'"/>
   <p:option name="debug" required="false" select="'no'"/>
   <p:option name="debug-dir-uri" required="false" select="'debug'"/>
-  <p:option name="status-dir-uri" select="'status'"/>
+  <p:option name="status-dir-uri" required="false" select="'status'"/>
 	<p:option name="filename-driver" required="false" select="'tei2hub/tei2hub'"/>
 	
   <p:input port="source" primary="true" />
@@ -49,9 +49,13 @@
   <tr:dynamic-transformation-pipeline name="dtp"
     fallback-xsl="http://transpect.io/tei2hub/xsl/tei2hub.xsl"
     fallback-xpl="http://transpect.io/tei2hub/xpl/tei2hub_default.xpl">
+
     <p:with-option name="load" select="$filename-driver"/>
     <p:with-option name="debug" select="$debug"/>
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
+    <p:input port="source">
+      <p:pipe port="source" step="tei2hub"/>
+    </p:input>
     <p:input port="additional-inputs">
       <p:pipe port="additional-inputs" step="tei2hub"/>
     </p:input>
