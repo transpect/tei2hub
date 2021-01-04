@@ -152,9 +152,25 @@
       </xsl:if>
       <xsl:apply-templates select="@rendition" mode="#current"/>
       <tgroup cols="{count(colgroup/col)}">
+        <xsl:call-template name="add-colspec"/>
         <xsl:apply-templates select="thead, tbody, tfoot" mode="#current"/>
       </tgroup>
     </xsl:element>
+  </xsl:template>
+  
+ <xsl:param name="create-colspec" select="true()"/>
+  
+ <xsl:template name="add-colspec">
+   <xsl:if test="$create-colspec = (true(), 'yes')">
+     <xsl:for-each select="colgroup/col">
+       <xsl:variable name="colnumber" select="position()"/>
+       <colspec>
+         <xsl:attribute name="colwidth" select="current()/@css:width"/>
+         <xsl:attribute name="colnum" select="$colnumber"/>
+         <xsl:attribute name="colname" select="concat('col', $colnumber)"/>
+       </colspec>
+     </xsl:for-each>
+   </xsl:if>
   </xsl:template>
   
   <xsl:template match="table/postscript" mode="tei2hub" priority="2">
