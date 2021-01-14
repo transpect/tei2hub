@@ -21,6 +21,9 @@
   <xsl:param name="debug-dir-uri" select="'debug'"/>
   
   <xsl:variable name="root" select="/" as="document-node()"/>
+  <xsl:param name="sections-to-numbered-secs" as="xs:boolean" select="false()">
+    <!-- if set true(): sections are nested as sec1/sec2 etc.-->
+  </xsl:param>
   
 <!--  <xsl:key name="rule-by-name" match="css:rule" use="@name"/>
   <xsl:key name="by-id" match="*[@id | @xml:id]" use="@id | @xml:id"/>
@@ -879,9 +882,16 @@
 
   <xsl:template match="*:part[*[not(self::*:info | self::title | self::*:subtitle | self::*:chapter)]] " mode="clean-up">
     <xsl:copy copy-namespaces="no">
+      <xsl:apply-templates select="@*" mode="#current"/>
       <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar][preceding-sibling::*[1][self::*:info | self::*:title | self::*:subtitle]] | *:chapter">
         <xsl:choose>
-          <xsl:when test="current-group()[1][self::*:info | self::*:title | self::*:subtitle | self::*:chapter]">
+          <xsl:when test="current-group()[1][self::*:info]">
+            <xsl:apply-templates select="current-group()" mode="#current"/>
+          </xsl:when>
+          <xsl:when test="current-group()[1][self::*:title | self::*:subtitle]">
+            <xsl:element name="info"><xsl:apply-templates select="current-group()" mode="#current"/></xsl:element>
+          </xsl:when>
+          <xsl:when test="current-group()[1][self::*:chapter]">
             <xsl:apply-templates select="current-group()" mode="#current"/>
           </xsl:when>
           <xsl:otherwise>
@@ -891,14 +901,13 @@
           </xsl:otherwise>
         </xsl:choose>
       </xsl:for-each-group>
-    </xsl:copy>      
+    </xsl:copy>
   </xsl:template>
 
-
-  <xsl:template match="*:section[parent::*[self::*:section]]" mode="clean-up">
-    <xsl:element name="sect{count(ancestor::*:section)}">
+  <xsl:template match="*:section[parent::*[self::*:section]] | *:section[*:section]" mode="clean-up">
+    <xsl:element name="{if ($sections-to-numbered-secs) then concat('sect',count(ancestor-or-self::*:section)) else 'section'}">
       <xsl:apply-templates select="@*, node()" mode="#current"/>
-    </xsl:element>      
+    </xsl:element>
   </xsl:template>
 
 </xsl:stylesheet>
