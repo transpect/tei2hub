@@ -487,6 +487,14 @@
     </personname>
   </xsl:template>
   
+  <xsl:template match="persName[not(surname) and not(forename)]" mode="tei2hub" priority="2">
+    <personname>
+      <xsl:apply-templates select="@*" mode="#current"/>
+      <othername>
+         <xsl:apply-templates select="node()" mode="#current"/>
+      </othername>
+    </personname>
+  </xsl:template>
   
   <xsl:template match="surname" mode="tei2hub">
     <surname>
@@ -883,7 +891,7 @@
   <xsl:template match="*:part[*[not(self::*:info | self::title | self::*:subtitle | self::*:chapter)]] " mode="clean-up">
     <xsl:copy copy-namespaces="no">
       <xsl:apply-templates select="@*" mode="#current"/>
-      <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar][preceding-sibling::*[1][self::*:info | self::*:title | self::*:subtitle]] | *:chapter">
+      <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar][preceding-sibling::*[1][self::*:info | self::*:title | self::*:subtitle | self::*:author]] | *:chapter">
         <xsl:choose>
           <xsl:when test="current-group()[1][self::*:info]">
             <xsl:apply-templates select="current-group()" mode="#current"/>
@@ -904,6 +912,22 @@
     </xsl:copy>
   </xsl:template>
 
+  <xsl:template match="*:section[not(*:info)] | *:chapter[not(*:info)]" mode="clean-up">
+    <xsl:copy>
+      <xsl:apply-templates select="@*" mode="#current"/>
+       <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar][preceding-sibling::*[1][self::*:info | self::*:title | self::*:subtitle | self::*:author]] | *:section | *:sect1">
+        <xsl:choose>
+          <xsl:when test="current-group()[1][self::*:title | self::*:subtitle]">
+            <xsl:element name="info"><xsl:apply-templates select="current-group()" mode="#current"/></xsl:element>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:apply-templates select="current-group()" mode="#current"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:for-each-group>
+    </xsl:copy>
+  </xsl:template>
+  
   <xsl:template match="*:section[parent::*[self::*:section]] | *:section[*:section]" mode="clean-up">
     <xsl:element name="{if ($sections-to-numbered-secs) then concat('sect',count(ancestor-or-self::*:section)) else 'section'}">
       <xsl:apply-templates select="@*, node()" mode="#current"/>
