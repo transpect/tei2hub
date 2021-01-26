@@ -729,14 +729,18 @@
   <xsl:template match="figure" mode="tei2hub">
     <figure>
       <xsl:if test="not(head)"><title/></xsl:if>
-      <xsl:apply-templates select="@*, node()" mode="#current"/>
+      <xsl:apply-templates select="@*, head, bibl[@type = 'copyright'], node()[not(self::head | self::bibl[@type = 'copyright'])] " mode="#current"/>
     </figure>
   </xsl:template>
   
   <xsl:template match="figure/bibl[@type = 'copyright']" mode="tei2hub" priority="2">
-    <para>
-      <xsl:apply-templates select="@* except @type, node()" mode="#current"/>
-    </para>
+    <info>
+      <legalnotice>
+        <para>
+          <xsl:apply-templates select="@* except @type, node()" mode="#current"/>
+        </para>
+      </legalnotice>
+    </info>
   </xsl:template>
 
   <xsl:template match="figure/note" mode="tei2hub">
