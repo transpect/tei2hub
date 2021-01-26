@@ -916,8 +916,8 @@
     <xsl:copy>
       <xsl:apply-templates select="@*" mode="#current"/>
        <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar]
-                                                            [preceding-sibling::*[1][self::*:info | self::*:title | self::epigraph | self::*:subtitle | self::*:author | self::*:abstract[@rend='motto']]] | 
-                                                            *:section | *:sect1">
+                                                            [preceding-sibling::*[1][self::*:info | self::*:title | self::*:epigraph | self::*:subtitle | self::*:author | self::*:abstract[@rend='motto']]]
+                                                           | *:section | *:sect1">
         <xsl:choose>
           <xsl:when test="current-group()[1][self::*:title | self::*:subtitle]">
             <xsl:element name="info"><xsl:apply-templates select="current-group()" mode="#current"/></xsl:element>
