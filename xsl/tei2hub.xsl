@@ -881,6 +881,12 @@
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </subtitle>
   </xsl:template>
+
+  <xsl:template match="head[@type = 'titleabbrev']" mode="tei2hub" priority="2">
+    <titleabbrev>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </titleabbrev>
+  </xsl:template>
   
   <xsl:template match="caption" mode="tei2hub">
     <caption>
@@ -895,7 +901,7 @@
   <xsl:template match="*:part[*[not(self::*:info | self::title | self::*:subtitle | self::*:chapter)]] " mode="clean-up">
     <xsl:copy copy-namespaces="no">
       <xsl:apply-templates select="@*" mode="#current"/>
-      <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar][preceding-sibling::*[1][self::*:info | self::*:title | self::*:subtitle | self::*:author]] | *:chapter">
+      <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar][preceding-sibling::*[1][self::*:info | self::*:title | self::*:subtitle | self::*:author | self::*:titleabbrev]] | *:chapter">
         <xsl:choose>
           <xsl:when test="current-group()[1][self::*:info]">
             <xsl:apply-templates select="current-group()" mode="#current"/>
@@ -920,7 +926,7 @@
     <xsl:copy>
       <xsl:apply-templates select="@*" mode="#current"/>
        <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar]
-                                                            [preceding-sibling::*[1][self::*:info | self::*:title | self::*:epigraph | self::*:subtitle | self::*:author | self::*:abstract[@rend='motto']]]
+                                                            [preceding-sibling::*[1][self::*:info | self::*:title | self::*:epigraph | self::*:subtitle | self::*:author | self::*:titleabbrev | self::*:abstract[@rend='motto']]]
                                                            | *:section | *:sect1">
         <xsl:choose>
           <xsl:when test="current-group()[1][self::*:title | self::*:subtitle]">
