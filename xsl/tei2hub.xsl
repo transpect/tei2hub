@@ -901,7 +901,7 @@
   <xsl:template match="*:part[*[not(self::*:info | self::title | self::*:subtitle | self::*:chapter)]] " mode="clean-up">
     <xsl:copy copy-namespaces="no">
       <xsl:apply-templates select="@*" mode="#current"/>
-      <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar][preceding-sibling::*[1][self::*:info | self::*:title | self::*:subtitle | self::*:author | self::*:titleabbrev]] | *:chapter">
+      <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar | self::*:table][preceding-sibling::*[1][self::*:info | self::*:title | self::*:subtitle | self::*:author | self::*:titleabbrev]] | *:chapter">
         <xsl:choose>
           <xsl:when test="current-group()[1][self::*:info]">
             <xsl:apply-templates select="current-group()" mode="#current"/>
@@ -925,7 +925,7 @@
   <xsl:template match="*:section[not(*:info)] | *:chapter[not(*:info)]" mode="clean-up">
     <xsl:copy>
       <xsl:apply-templates select="@*" mode="#current"/>
-       <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar]
+       <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar | self::*:table]
                                                             [preceding-sibling::*[1][self::*:info | self::*:title | self::*:epigraph | self::*:subtitle | self::*:author | self::*:titleabbrev | self::*:abstract[@rend='motto']]]
                                                            | *:section | *:sect1">
         <xsl:choose>
@@ -943,7 +943,7 @@
   <xsl:template match="*:section[parent::*[self::*:section]] | *:section[*:section]" mode="clean-up" priority="3">
     <xsl:element name="{if ($sections-to-numbered-secs) then concat('sect',count(ancestor-or-self::*:section)) else 'section'}">
       <xsl:apply-templates select="@*" mode="#current"/>
-      <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar]
+      <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar | self::*:table]
                                                            [preceding-sibling::*[1][self::*:info | self::*:title | self::*:epigraph | self::*:subtitle | self::*:author | self::*:titleabbrev | self::*:abstract[@rend='motto']]]
                                                            | *:section | *:sect1">
         <xsl:choose>
