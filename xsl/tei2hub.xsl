@@ -901,7 +901,8 @@
   <xsl:template match="*:part[*[not(self::*:info | self::title | self::*:subtitle | self::*:chapter)]] " mode="clean-up">
     <xsl:copy copy-namespaces="no">
       <xsl:apply-templates select="@*" mode="#current"/>
-      <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar | self::*:table][preceding-sibling::*[1][self::*:info | self::*:title | self::*:subtitle | self::*:author | self::*:titleabbrev]] | *:chapter">
+      <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar | self::*:table]
+                                                           [preceding-sibling::*[1][self::*:info | self::*:title | self::*:epigraph | self::*:blockquote| self::*:subtitle | self::*:author | self::*:titleabbrev | self::*:abstract[@rend='motto']]] | *:chapter">
         <xsl:choose>
           <xsl:when test="current-group()[1][self::*:info]">
             <xsl:apply-templates select="current-group()" mode="#current"/>
@@ -926,7 +927,7 @@
     <xsl:copy>
       <xsl:apply-templates select="@*" mode="#current"/>
        <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar | self::*:table]
-                                                            [preceding-sibling::*[1][self::*:info | self::*:title | self::*:epigraph | self::*:subtitle | self::*:author | self::*:titleabbrev | self::*:abstract[@rend='motto']]]
+                                                            [preceding-sibling::*[1][self::*:info | self::*:title | self::*:epigraph | self::*:blockquote | self::*:subtitle | self::*:author | self::*:titleabbrev | self::*:abstract[@rend='motto']]]
                                                            | *:section | *:sect1">
         <xsl:choose>
           <xsl:when test="current-group()[1][self::*:title | self::*:subtitle]">
@@ -944,7 +945,7 @@
     <xsl:element name="{if ($sections-to-numbered-secs) then concat('sect',count(ancestor-or-self::*:section)) else 'section'}">
       <xsl:apply-templates select="@*" mode="#current"/>
       <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar | self::*:table]
-                                                           [preceding-sibling::*[1][self::*:info | self::*:title | self::*:epigraph | self::*:subtitle | self::*:author | self::*:titleabbrev | self::*:abstract[@rend='motto']]]
+                                                           [preceding-sibling::*[1][self::*:info | self::*:blockquote | self::*:title | self::*:epigraph | self::*:subtitle | self::*:author | self::*:titleabbrev | self::*:abstract[@rend='motto']]]
                                                            | *:section | *:sect1">
         <xsl:choose>
           <xsl:when test="current-group()[1][self::*:title | self::*:subtitle]">
