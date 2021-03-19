@@ -898,7 +898,7 @@
       <xsl:apply-templates select="node()" mode="#current"/>
   </xsl:template>
 
-  <xsl:template match="*:part[*[not(self::*:info | self::title | self::*:subtitle | self::*:chapter)]] " mode="clean-up">
+  <xsl:template match="*:part[*[not(self::*:info | self::title | self::*:subtitle | self::*:chapter | self::*:appendix)]] " mode="clean-up">
     <xsl:copy copy-namespaces="no">
       <xsl:apply-templates select="@*" mode="#current"/>
       <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar | self::*:table]
@@ -923,7 +923,7 @@
     </xsl:copy>
   </xsl:template>
 
-  <xsl:template match="*:section[not(*:info)] | *:chapter[not(*:info)]" mode="clean-up">
+  <xsl:template match="*:section[not(*:info)] | *:chapter[not(*:info)] | *:appendix[not(*:info)]" mode="clean-up">
     <xsl:copy>
       <xsl:apply-templates select="@*" mode="#current"/>
        <xsl:for-each-group select="*" group-starting-with="*[self::*:para | self::*:div | self::*:sidebar | self::*:table]
