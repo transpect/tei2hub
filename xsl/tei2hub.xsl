@@ -104,6 +104,16 @@
     </bibliomixed>
   </xsl:template>
 
+  <xsl:template match="postscript/bibl[@type = 'copyright']" mode="tei2hub" priority="3"> 
+    <info>
+      <legalnotice role="copyright">
+        <para>
+          <xsl:apply-templates select="@*, node()" mode="#current"/>
+        </para>
+      </legalnotice>
+    </info>
+  </xsl:template>
+  
   <xsl:template match="biblFull" mode="tei2hub">
     <biblioentry>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
@@ -146,11 +156,11 @@
   </xsl:template>
   
   <xsl:template match="table" mode="tei2hub" priority="3">
-    <xsl:element name="{if (head or caption or note) then 'table' else 'informaltable'}">
+    <xsl:element name="{if (head or caption or note or postscript) then 'table' else 'informaltable'}">
       <xsl:apply-templates select="@* except (@rend, @rendition), head" mode="#current"/>
-      <xsl:if test="caption or note">
+      <xsl:if test="caption or note or postscript">
         <caption>
-          <xsl:apply-templates select="caption/node(), note" mode="#current"/>
+          <xsl:apply-templates select="postscript, caption/node(), note" mode="#current"/>
         </caption>
       </xsl:if>
       <xsl:apply-templates select="@rendition" mode="#current"/>
