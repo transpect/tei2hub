@@ -105,13 +105,9 @@
   </xsl:template>
 
   <xsl:template match="postscript/bibl[@type = 'copyright']" mode="tei2hub" priority="3"> 
-    <info>
-      <legalnotice role="copyright">
-        <para>
-          <xsl:apply-templates select="@*, node()" mode="#current"/>
-        </para>
-      </legalnotice>
-    </info>
+    <para role="copyright">
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </para>
   </xsl:template>
   
   <xsl:template match="biblFull" mode="tei2hub">
@@ -158,16 +154,16 @@
   <xsl:template match="table" mode="tei2hub" priority="3">
     <xsl:element name="{if (head or caption or note or postscript) then 'table' else 'informaltable'}">
       <xsl:apply-templates select="@* except (@rend, @rendition), head" mode="#current"/>
-      <xsl:if test="caption or note or postscript">
-        <caption>
-          <xsl:apply-templates select="postscript, caption/node(), note" mode="#current"/>
-        </caption>
-      </xsl:if>
       <xsl:apply-templates select="@rendition" mode="#current"/>
       <tgroup cols="{count(colgroup/col)}">
         <xsl:call-template name="add-colspec"/>
         <xsl:apply-templates select="thead, tbody, tfoot" mode="#current"/>
       </tgroup>
+      <xsl:if test="caption or note or postscript">
+        <caption>
+          <xsl:apply-templates select="caption/node(), note, postscript " mode="#current"/>
+        </caption>
+      </xsl:if>
     </xsl:element>
   </xsl:template>
   
@@ -550,8 +546,8 @@
     </abstract>
   </xsl:template>
 
-  <xsl:variable name="structural-containers" as="xs:string+" select="('dedication', 'marginal', 'motto', 'part', 'article', 'chapter', 'glossary')"/>
-  <xsl:variable name="main-structural-containers" as="xs:string+" select="('part', 'article', 'chapter')"/>
+  <xsl:variable name="structural-containers" as="xs:string+" select="('dedication', 'marginal', 'motto', 'part', 'article', 'appendix', 'chapter', 'glossary')"/>
+  <xsl:variable name="main-structural-containers" as="xs:string+" select="('part', 'article', 'chapter', 'appendix')"/>
 
   <!-- document structure -->
   <xsl:template mode="tei2hub" match="  div[not(@type = $structural-containers)]
@@ -908,7 +904,7 @@
       <xsl:apply-templates select="node()" mode="#current"/>
   </xsl:template>
 
-  <xsl:variable name="non-info-elt-names" as="xs:string+" select="('para', 'div', 'sidebar', 'table', 'bibliodiv', 'figure', 'orderedlist', 'variablelist', 'itemizedlist', 'blockquote')"/>
+  <xsl:variable name="non-info-elt-names" as="xs:string+" select="('para', 'div', 'sidebar', 'table', 'bibliodiv', 'figure', 'orderedlist', 'variablelist', 'itemizedlist', 'blockquote', 'section', 'appendix', 'chapter')"/>
 
   <xsl:template match="*:part[*[not(self::*:info | self::title | self::*:subtitle | self::*:chapter | self::*:appendix)]] " mode="clean-up">
     <xsl:copy copy-namespaces="no">
