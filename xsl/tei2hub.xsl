@@ -734,8 +734,9 @@
   
   <xsl:template match="figure" mode="tei2hub">
     <figure>
+      <xsl:apply-templates select="@*" mode="#current"/>
       <xsl:if test="not(head)"><title/></xsl:if>
-      <xsl:apply-templates select="@*, head, bibl[@type = 'copyright'], node()[not(self::head | self::bibl[@type = 'copyright'])] " mode="#current"/>
+      <xsl:apply-templates select="head, bibl[@type = 'copyright'], node()[not(self::head | self::bibl[@type = 'copyright'])] " mode="#current"/>
     </figure>
   </xsl:template>
   
