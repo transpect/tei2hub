@@ -128,20 +128,11 @@
     </bibliodiv>
   </xsl:template>
 
-<!--  <xsl:template match="listBibl" mode="tei2hub" priority="2">
-    <xsl:param name="dissolve-listBibl" as="xs:boolean?" tunnel="yes"/>
-    <!-\- if ancestor div is the ref-list aready-\->
-    <xsl:choose>
-      <xsl:when test="$dissolve-listBibl">
-         <xsl:apply-templates select="node()" mode="#current"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <ref-list>
-          <xsl:apply-templates select="@*, node()" mode="#current"/>
-        </ref-list>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>-->
+  <xsl:template match="listBibl" mode="tei2hub" priority="2">
+    <bibliography>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </bibliography>
+  </xsl:template>
   
   <xsl:template match="table/@rendition[matches(., '\.(png|jpe?g)$', 'i')]" mode="tei2hub">
     <alt>
@@ -811,7 +802,7 @@
   </xsl:template>
 
   <xsl:template match="graphic" mode="tei2hub">
-    <xsl:element name="{if (parent::*[self::figure]) then 'mediaobject' else 'inlinemediaobject'}">
+    <xsl:element name="{if (parent::*[self::head | self::p | self::hi | self::seg]) then 'inlinemediaobject' else 'mediaobject'}">
       <xsl:apply-templates select="@rend, @srcpath, @css:*, @xml:id" mode="#current"/>
       <imageobject>
         <imagedata><xsl:apply-templates select="@url" mode="#current"/></imagedata>
