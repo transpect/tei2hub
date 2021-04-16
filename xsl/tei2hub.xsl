@@ -317,7 +317,7 @@
   <xsl:template match="titlePage" mode="tei2hub"/>
   
   <xsl:variable name="frontmatter-parts" as="xs:string+"
-    select="('title-page', 'copyright-page', 'dedication', 'about-contrib', 'about-book', 'series', 'additional-info', 'motto')"/>
+    select="('title-page', 'copyright-page', 'dedication', 'about-contrib', 'about-book', 'series', 'additional-info', 'motto', 'halftitle')"/>
   
   <xsl:template match="div[@rend = $frontmatter-parts]" mode="tei2hub" priority="2">
     <colophon role="{@type}">
@@ -896,7 +896,7 @@
       <xsl:apply-templates select="node()" mode="#current"/>
   </xsl:template>
 
-  <xsl:variable name="non-info-elt-names" as="xs:string+" select="('para', 'div', 'sidebar', 'table', 'bibliodiv', 'figure', 'orderedlist', 'variablelist', 'itemizedlist', 'blockquote', 'section', 'appendix', 'chapter')"/>
+  <xsl:variable name="non-info-elt-names" as="xs:string+" select="('para', 'div', 'sidebar', 'table', 'bibliodiv', 'figure', 'orderedlist', 'variablelist', 'itemizedlist', 'blockquote', 'section', 'appendix', 'chapter', 'bibliomixed')"/>
 
   <xsl:template match="*:part[*[not(self::*:info | self::title | self::*:subtitle | self::*:chapter | self::*:appendix)]] " mode="clean-up">
     <xsl:copy copy-namespaces="no">
