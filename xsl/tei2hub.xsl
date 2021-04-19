@@ -129,11 +129,17 @@
   </xsl:template>
 
   <xsl:template match="listBibl" mode="tei2hub" priority="2">
+    <xsl:element name="{if (..[self::div[@type = 'bibliography'] | self::listBibl]) then 'bibliodiv' else 'bibliography'}">
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="div[@type = 'bibliography'][head][listBibl]" mode="tei2hub" priority="4">
     <bibliography>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </bibliography>
   </xsl:template>
-  
+
   <xsl:template match="table/@rendition[matches(., '\.(png|jpe?g)$', 'i')]" mode="tei2hub">
     <alt>
       <xsl:for-each select="tokenize(., ' ')">
@@ -923,7 +929,7 @@
     </xsl:copy>
   </xsl:template>
 
-  <xsl:template match="*:section[not(*:info)] | *:chapter[not(*:info)] | *:bibliography[not(*:info)] | *:appendix[not(*:info)]" mode="clean-up">
+  <xsl:template match="*:section[not(*:info)] | *:chapter[not(*:info)] | *:bibliography[not(*:info)] | *:appendix[not(*:info)] | *:bibliodiv[not(*:info)]" mode="clean-up">
     <xsl:copy>
       <xsl:apply-templates select="@*" mode="#current"/>
        <xsl:for-each-group select="*" group-starting-with="*[local-name() = $non-info-elt-names]
