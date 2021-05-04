@@ -902,7 +902,7 @@
       <xsl:apply-templates select="node()" mode="#current"/>
   </xsl:template>
 
-  <xsl:variable name="non-info-elt-names" as="xs:string+" select="('para', 'div', 'sidebar', 'table', 'bibliodiv', 'figure', 'orderedlist', 'variablelist', 'itemizedlist', 'blockquote', 'section', 'appendix', 'chapter', 'bibliomixed')"/>
+  <xsl:variable name="non-info-elt-names" as="xs:string+" select="('para', 'div', 'sidebar', 'table', 'informaltable', 'bibliodiv', 'figure', 'orderedlist', 'variablelist', 'itemizedlist', 'blockquote', 'section', 'appendix', 'chapter', 'bibliomixed')"/>
 
   <xsl:template match="*:part[*[not(self::*:info | self::title | self::*:subtitle | self::*:chapter | self::*:appendix)]] " mode="clean-up">
     <xsl:copy copy-namespaces="no">
