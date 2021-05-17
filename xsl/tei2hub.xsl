@@ -129,7 +129,13 @@
   </xsl:template>
 
   <xsl:template match="listBibl" mode="tei2hub" priority="2">
-    <xsl:element name="{if (..[self::div[@type = 'bibliography'] | self::listBibl]) then 'bibliodiv' else 'bibliography'}">
+    <xsl:variable name="target" as="xs:string" select="if (..[self::div[@type = 'bibliography']]) 
+                                                       then 'bibliodiv'
+                                                       else
+                                                        if (count(ancestor::listBibl) ge 1)
+                                                        then 'bibliolist'
+                                                        else 'bibliography'"/>
+    <xsl:element name="{$target}">
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </xsl:element>
   </xsl:template>
@@ -902,7 +908,7 @@
       <xsl:apply-templates select="node()" mode="#current"/>
   </xsl:template>
 
-  <xsl:variable name="non-info-elt-names" as="xs:string+" select="('para', 'div', 'sidebar', 'table', 'informaltable', 'bibliodiv', 'figure', 'orderedlist', 'variablelist', 'itemizedlist', 'blockquote', 'section', 'appendix', 'chapter', 'bibliomixed')"/>
+  <xsl:variable name="non-info-elt-names" as="xs:string+" select="('para', 'div', 'sidebar', 'table', 'informaltable', 'bibliodiv', 'figure', 'orderedlist', 'variablelist', 'itemizedlist', 'blockquote', 'section', 'appendix', 'chapter', 'bibliomixed', 'bibliolist')"/>
 
   <xsl:template match="*:part[*[not(self::*:info | self::title | self::*:subtitle | self::*:chapter | self::*:appendix)]] " mode="clean-up">
     <xsl:copy copy-namespaces="no">
@@ -929,7 +935,7 @@
     </xsl:copy>
   </xsl:template>
 
-  <xsl:template match="*:section[not(*:info)] | *:chapter[not(*:info)] | *:bibliography[not(*:info)] | *:appendix[not(*:info)] | *:bibliodiv[not(*:info)]" mode="clean-up">
+  <xsl:template match="*:section[not(*:info)] | *:chapter[not(*:info)] | *:bibliography[not(*:info)] | *:appendix[not(*:info)] | *:bibliodiv[not(*:info)] | *:bibliolist[not(*:info)]" mode="clean-up">
     <xsl:copy>
       <xsl:apply-templates select="@*" mode="#current"/>
        <xsl:for-each-group select="*" group-starting-with="*[local-name() = $non-info-elt-names]
