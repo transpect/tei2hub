@@ -36,6 +36,10 @@
     </xsl:copy>
   </xsl:template>
   
+  <xsl:template match="processing-instruction()" mode="tei2hub clean-up" priority="2">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+  
   <xsl:template match="@rend" mode="tei2hub">
     <xsl:attribute name="role" select="."/>
   </xsl:template>
@@ -913,7 +917,7 @@
   <xsl:template match="*:part[*[not(self::*:info | self::title | self::*:subtitle | self::*:chapter | self::*:appendix)]] " mode="clean-up">
     <xsl:copy copy-namespaces="no">
       <xsl:apply-templates select="@*" mode="#current"/>
-        <xsl:for-each-group select="*" group-starting-with="*[local-name() = $non-info-elt-names]
+        <xsl:for-each-group select="node()" group-starting-with="*[local-name() = $non-info-elt-names]
                                                            [preceding-sibling::*[1][self::*:info | self::*:title | self::*:epigraph | self::*:subtitle | self::*:author | self::*:titleabbrev | self::*:abstract[@rend='motto']]] | *:chapter">
         <xsl:choose>
           <xsl:when test="current-group()[1][self::*:info]">
@@ -938,7 +942,7 @@
   <xsl:template match="*:section[not(*:info)] | *:chapter[not(*:info)] | *:bibliography[not(*:info)] | *:appendix[not(*:info)] | *:bibliodiv[not(*:info)] | *:bibliolist[not(*:info)]" mode="clean-up">
     <xsl:copy>
       <xsl:apply-templates select="@*" mode="#current"/>
-       <xsl:for-each-group select="*" group-starting-with="*[local-name() = $non-info-elt-names]
+       <xsl:for-each-group select="node()" group-starting-with="*[local-name() = $non-info-elt-names]
                                                             [preceding-sibling::*[1][self::*:info | self::*:title | self::*:epigraph | self::*:subtitle | self::*:author | self::*:titleabbrev | self::*:abstract[@rend='motto']]]
                                                            | *:section | *:sect1">
         <xsl:choose>
@@ -956,7 +960,7 @@
   <xsl:template match="*:section[parent::*[self::*:section]] | *:section[*:section]" mode="clean-up" priority="3">
     <xsl:element name="{if ($sections-to-numbered-secs) then concat('sect',count(ancestor-or-self::*:section)) else 'section'}">
       <xsl:apply-templates select="@*" mode="#current"/>
-      <xsl:for-each-group select="*" group-starting-with="*[local-name() = $non-info-elt-names]
+      <xsl:for-each-group select="node()" group-starting-with="*[local-name() = $non-info-elt-names]
                                                            [preceding-sibling::*[1][self::*:info | self::*:title | self::*:epigraph | self::*:subtitle | self::*:author | self::*:titleabbrev | self::*:abstract[@rend='motto']]]
                                                            | *:section | *:sect1">
         <xsl:choose>
