@@ -763,6 +763,12 @@
     </note>
   </xsl:template>
 
+  <xsl:template match="figure/p" mode="tei2hub">
+    <note>
+      <xsl:next-match/>
+    </note>
+  </xsl:template>
+  
   <xsl:template match="graphic/@url" mode="tei2hub">
     <xsl:attribute name="fileref" select="."/>
   </xsl:template>
