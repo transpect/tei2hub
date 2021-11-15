@@ -945,7 +945,7 @@
     </xsl:copy>
   </xsl:template>
 
-  <xsl:template match="*:section[not(*:info)] | *:chapter[not(*:info)] | *:bibliography[not(*:info)] | *:appendix[not(*:info)] | *:bibliodiv[not(*:info)] | *:bibliolist[not(*:info)]" mode="clean-up">
+  <xsl:template match="*:section[not(*:info)] | *:chapter[not(*:info)] | *:bibliography[not(*:info)] | *:appendix[not(*:info)] | *:bibliodiv[not(*:info)] | *:bibliolist[not(*:info)] | *:index[not(*:info)]" mode="clean-up">
     <xsl:copy>
       <xsl:apply-templates select="@*" mode="#current"/>
        <xsl:for-each-group select="node()" group-starting-with="*[local-name() = $non-info-elt-names]
