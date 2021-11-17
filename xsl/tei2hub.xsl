@@ -144,7 +144,7 @@
     </xsl:element>
   </xsl:template>
 
-  <xsl:template match="div[@type = 'bibliography'][head][listBibl]" mode="tei2hub" priority="4">
+  <xsl:template match="div[@type = 'bibliography'][head][listBibl | bibl]" mode="tei2hub" priority="4">
     <bibliography>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </bibliography>
