@@ -145,9 +145,9 @@
   </xsl:template>
 
   <xsl:template match="div[@type = 'bibliography'][head][listBibl | bibl]" mode="tei2hub" priority="4">
-    <bibliography>
+    <xsl:element name="{if (ancestor::div[@type = 'bibliography']) then 'bibliodiv' else 'bibliography'}">
       <xsl:apply-templates select="@*, node()" mode="#current"/>
-    </bibliography>
+    </xsl:element>
   </xsl:template>
 
   <xsl:template match="table/@rendition[matches(., '\.(png|jpe?g)$', 'i')]" mode="tei2hub">
