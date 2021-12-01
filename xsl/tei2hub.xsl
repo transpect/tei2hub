@@ -25,9 +25,9 @@
     <!-- if set true(): sections are nested as sec1/sec2 etc.-->
   </xsl:param>
   
-<!--  <xsl:key name="rule-by-name" match="css:rule" use="@name"/>
+<!--  <xsl:key name="rule-by-name" match="css:rule" use="@name"/>-->
   <xsl:key name="by-id" match="*[@id | @xml:id]" use="@id | @xml:id"/>
-  <xsl:key name="link-by-anchor" match="ref" use="@target"/>-->
+  <xsl:key name="link-by-anchor" match="ref | link | ptr" use="@target"/>
   
   <!-- identity template -->
   <xsl:template match="* | @*" mode="tei2hub clean-up" priority="-0.5">
