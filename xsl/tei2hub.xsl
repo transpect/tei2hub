@@ -108,6 +108,12 @@
     </bibliomixed>
   </xsl:template>
 
+  <xsl:template match="p//bibl[@type = 'citation']" mode="tei2hub">
+    <citation>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </citation>
+  </xsl:template>
+  
   <xsl:template match="postscript/bibl[@type = 'copyright']" mode="tei2hub" priority="3"> 
     <para role="copyright">
       <xsl:apply-templates select="@*, node()" mode="#current"/>
@@ -579,6 +585,10 @@
   <xsl:key name="tei2hub:corresp-meta" match="/TEI/teiHeader/profileDesc/textClass/keywords | /TEI/teiHeader/profileDesc/abstract" use="@corresp"/>
   
   <xsl:template match="@type" mode="tei2hub" priority="2"/>
+  
+  <xsl:template match="@corresp" mode="tei2hub" priority="3">
+    <xsl:attribute name="{if (count(tokenize(., '\s+')) gt 1) then 'linkends' else 'linkend'}" select="replace(., '#', '')"/>
+  </xsl:template>
   
   <xsl:template match="div[@type = $main-structural-containers]/@subtype" mode="tei2hub" priority="3">
     <xsl:attribute name="renderas" select="."/>
