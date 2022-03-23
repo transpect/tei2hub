@@ -815,18 +815,19 @@
     </tertiay>
   </xsl:template>
 
-  <xsl:template match="see |  address" mode="tei2hub">
+
+  <xsl:template match="index[not(parent::*[self::index])]//term[@type = 'see']" mode="tei2hub" priority="3">
+    <see>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </see>
+  </xsl:template>
+
+  <xsl:template match="address" mode="tei2hub">
     <xsl:element name="{local-name()}" exclude-result-prefixes="#all">
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </xsl:element>
   </xsl:template>
   
-  <xsl:template match="see-also" mode="tei2hub">
-    <seealso>
-      <xsl:apply-templates select="node()" mode="#current"/>
-    </seealso>
-  </xsl:template>
-
   <xsl:template match="graphic/desc" mode="tei2hub">
     <alt>
       <xsl:apply-templates select="node()" mode="#current"/>
