@@ -487,6 +487,13 @@
     </xsl:element>
   </xsl:template>
   
+  <xsl:template match="seg[@type = 'tab']" mode="tei2hub" priority="3">
+    <xsl:element name="tab">
+      <xsl:attribute name="xml:space" select="'preserve'"/>
+      <xsl:text>	</xsl:text>
+    </xsl:element>
+  </xsl:template>
+
   <xsl:template match="@rendition[. = ('subscript', 'superscript')]" mode="tei2hub"/>
   
   <xsl:template match="hi[@rendition = ('subscript', 'superscript')] | hi[@specific-use = ('subscript', 'superscript')]" mode="tei2hub">
