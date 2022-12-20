@@ -24,7 +24,8 @@
   <xsl:param name="sections-to-numbered-secs" as="xs:boolean" select="false()">
     <!-- if set true(): sections are nested as sec1/sec2 etc.-->
   </xsl:param>
-  
+  <xsl:variable name="tei2hub:speech-to-list" as="xs:boolean" select="false()"/>
+
 <!--  <xsl:key name="rule-by-name" match="css:rule" use="@name"/>-->
   <xsl:key name="by-id" match="*[@id | @xml:id]" use="@id | @xml:id"/>
   <xsl:key name="link-by-anchor" match="ref | link | ptr" use="@target"/>
@@ -880,13 +881,41 @@
   </xsl:template>
   
   <xsl:template match="spGrp" mode="tei2hub">
-    <div role="speech"><xsl:apply-templates select="node()" mode="#current"/></div>
+    <!-- as default divs are created if the variable is set to true() a variable list will be generated -->
+    <xsl:choose>
+      <xsl:when test="$tei2hub:speech-to-list">
+        <variablelist role="speech">
+          <xsl:apply-templates select="node()" mode="#current"/>
+        </variablelist>
+      </xsl:when>
+      <xsl:otherwise>
+        <div role="speech">
+          <xsl:apply-templates select="node()" mode="#current"/>
+        </div>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
   <xsl:template match="sp" mode="tei2hub">
-      <xsl:apply-templates select="node()" mode="#current"/>
+    <xsl:choose>
+      <xsl:when test="$tei2hub:speech-to-list">
+        <varlistentry>
+          <xsl:apply-templates select="node()" mode="#current"/>
+        </varlistentry>
+      </xsl:when>
+      <xsl:otherwise>
+          <xsl:apply-templates select="node()" mode="#current"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
+  
+  <xsl:template match="sp/p[$tei2hub:speech-to-list]" mode="tei2hub" priority="5">
+    <listitem>
+      <xsl:next-match/>
+    </listitem>
+  </xsl:template>
+
   <xsl:template match="stage" mode="tei2hub">
     <para>
     <xsl:apply-templates select="@*, node()" mode="#current"/>
@@ -894,9 +923,18 @@
   </xsl:template>
   
   <xsl:template match="speaker" mode="tei2hub">
-    <para role="speaker">
-      <xsl:apply-templates select="@* except @rend, node()" mode="#current"/>>
-    </para>
+    <xsl:choose>
+      <xsl:when test="$tei2hub:speech-to-list">
+        <term role="speaker">
+          <xsl:apply-templates select="@* except @rend, node()" mode="#current"/>
+        </term>
+      </xsl:when>
+      <xsl:otherwise>
+        <para role="speaker">
+          <xsl:apply-templates select="@* except @rend, node()" mode="#current"/>>
+        </para>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
   
