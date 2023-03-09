@@ -795,6 +795,10 @@
     <xsl:attribute name="type" select="."/> 
   </xsl:template>
   
+  <xsl:template match="term/@sortKey" mode="tei2hub">
+    <xsl:attribute name="sortas" select="."/> 
+  </xsl:template>
+  
   <xsl:template match="index[not(parent::*[self::index])]" mode="tei2hub">
     <indexterm>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
