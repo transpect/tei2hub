@@ -166,16 +166,23 @@
   </xsl:template>
   
   <xsl:template match="table" mode="tei2hub" priority="3">
-    <xsl:element name="{if (head or caption or note or postscript) then 'table' else 'informaltable'}">
+    <xsl:element name="{if (head) then 'table' else 'informaltable'}">
       <xsl:apply-templates select="@* except (@rend, @rendition), head" mode="#current"/>
       <xsl:apply-templates select="@rendition" mode="#current"/>
+      <xsl:if test="exists(postscript/bibl[@type='copyright'][normalize-space()])">
+        <info>
+          <legalnotice role="copyright">
+            <xsl:apply-templates select="postscript/bibl[@type='copyright']" mode="#current"/>
+          </legalnotice>
+        </info>
+      </xsl:if>
       <tgroup cols="{count(colgroup/col)}">
         <xsl:call-template name="add-colspec"/>
         <xsl:apply-templates select="thead, tbody, tfoot" mode="#current"/>
       </tgroup>
       <xsl:if test="caption or note or postscript">
         <caption>
-          <xsl:apply-templates select="caption/node(), note, postscript " mode="#current"/>
+          <xsl:apply-templates select="caption/node(), note, postscript/node()[not(self::bibl[@type='copyright'])] " mode="#current"/>
         </caption>
       </xsl:if>
     </xsl:element>
