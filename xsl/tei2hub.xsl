@@ -180,7 +180,7 @@
         <xsl:call-template name="add-colspec"/>
         <xsl:apply-templates select="thead, tbody, tfoot" mode="#current"/>
       </tgroup>
-      <xsl:if test="caption or note or postscript[not(bibl[@type='copyright'])]">
+      <xsl:if test="caption or note or postscript/*[not(self::bibl[@type='copyright'])]">
         <caption>
           <xsl:apply-templates select="caption/node(), note, postscript/node()[not(self::bibl[@type='copyright'])] " mode="#current"/>
         </caption>
