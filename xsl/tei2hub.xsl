@@ -901,7 +901,7 @@
   <xsl:template match="spGrp" mode="tei2hub">
     <!-- as default divs are created if the variable is set to true() a variable list will be generated -->
     <xsl:choose>
-      <xsl:when test="$tei2hub:speech-to-list">
+      <xsl:when test="$tei2hub:speech-to-list and sp[1][speaker]">
         <variablelist role="speech">
           <xsl:apply-templates select="node()" mode="#current"/>
         </variablelist>
@@ -916,7 +916,7 @@
   
   <xsl:template match="sp" mode="tei2hub">
     <xsl:choose>
-      <xsl:when test="$tei2hub:speech-to-list">
+      <xsl:when test="$tei2hub:speech-to-list and speaker">
         <varlistentry>
           <xsl:apply-templates select="node()" mode="#current"/>
         </varlistentry>
@@ -928,7 +928,7 @@
   </xsl:template>
   
   
-  <xsl:template match="sp/p[$tei2hub:speech-to-list]" mode="tei2hub" priority="5">
+  <xsl:template match="sp[speaker]/p[$tei2hub:speech-to-list]" mode="tei2hub" priority="5">
     <listitem>
       <xsl:next-match/>
     </listitem>
@@ -949,7 +949,7 @@
       </xsl:when>
       <xsl:otherwise>
         <para role="speaker">
-          <xsl:apply-templates select="@* except @rend, node()" mode="#current"/>>
+          <xsl:apply-templates select="@* except @rend, node()" mode="#current"/>
         </para>
       </xsl:otherwise>
     </xsl:choose>
