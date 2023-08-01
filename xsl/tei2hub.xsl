@@ -901,10 +901,22 @@
   <xsl:template match="spGrp" mode="tei2hub">
     <!-- as default divs are created if the variable is set to true() a variable list will be generated -->
     <xsl:choose>
-      <xsl:when test="$tei2hub:speech-to-list and sp[1][speaker]">
-        <variablelist role="speech">
-          <xsl:apply-templates select="node()" mode="#current"/>
-        </variablelist>
+      <xsl:when test="$tei2hub:speech-to-list and sp[speaker]">
+        <!-- it might occur that there are sp elements without speakers. 
+             on those new lists will be created to allow correct transformation-->
+        <xsl:for-each-group select="node()[not(self::text()[not(normalize-space())])]" 
+                    group-adjacent="boolean(self::sp[speaker])">
+          <xsl:choose>
+            <xsl:when test="current-group()[1][self::sp[speaker]]">
+              <variablelist role="speech">
+                <xsl:apply-templates select="current-group()" mode="#current"/>
+              </variablelist>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:apply-templates select="current-group()" mode="#current"/></xsl:otherwise>
+          </xsl:choose>
+        </xsl:for-each-group>
+
       </xsl:when>
       <xsl:otherwise>
         <div role="speech">
