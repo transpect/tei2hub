@@ -913,10 +913,10 @@
               </variablelist>
             </xsl:when>
             <xsl:otherwise>
-              <xsl:apply-templates select="current-group()" mode="#current"/></xsl:otherwise>
+              <xsl:apply-templates select="current-group()" mode="#current"/>
+            </xsl:otherwise>
           </xsl:choose>
         </xsl:for-each-group>
-
       </xsl:when>
       <xsl:otherwise>
         <div role="speech">
