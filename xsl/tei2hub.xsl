@@ -165,9 +165,11 @@
     </alt>
   </xsl:template>
   
+  <xsl:template match="table/@rend" mode="tei2hub"/>
+     
   <xsl:template match="table" mode="tei2hub" priority="3">
     <xsl:element name="{if (head) then 'table' else 'informaltable'}">
-      <xsl:apply-templates select="@* except (@rend, @rendition), head" mode="#current"/>
+      <xsl:apply-templates select="@* except (@rendition), head" mode="#current"/>
       <xsl:apply-templates select="@rendition" mode="#current"/>
       <xsl:if test="exists(postscript/bibl[@type='copyright'][normalize-space()])">
         <info>
