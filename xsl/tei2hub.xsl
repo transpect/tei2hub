@@ -109,7 +109,7 @@
     </bibliomixed>
   </xsl:template>
 
-  <xsl:template match="p//bibl[@type = 'citation']" mode="tei2hub" priority="2">
+  <xsl:template match="*[self::head|self::p]//bibl[@type = 'citation']" mode="tei2hub" priority="2">
     <citation>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </citation>
