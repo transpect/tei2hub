@@ -10,6 +10,7 @@
   xmlns:css="http://www.w3.org/1996/css"
   xmlns:tr="http://transpect.io"
   xmlns:mml="MathML Namespace Declaration"
+  xmlns:dbk="http://docbook.org/ns/docbook"
   xmlns="http://docbook.org/ns/docbook"
   xpath-default-namespace="http://www.tei-c.org/ns/1.0"
   exclude-result-prefixes="tr hub2htm saxon tei2hub tei xsl xs" 
@@ -796,6 +797,14 @@
     </note>
   </xsl:template>
   
+  <xsl:template match="dbk:figure[count(dbk:note) gt 1]/dbk:note[1]" mode="clean-up">
+    <note>
+      <xsl:apply-templates select="@*, node(), following-sibling::dbk:note/node()" mode="#current"/>
+    </note>
+  </xsl:template>
+
+  <xsl:template match="dbk:figure[count(dbk:note) gt 1]/dbk:note[position() gt 1]" mode="clean-up"/>
+    
   <xsl:template match="graphic/@url" mode="tei2hub">
     <xsl:attribute name="fileref" select="."/>
   </xsl:template>
