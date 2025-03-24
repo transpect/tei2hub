@@ -29,6 +29,7 @@
 
 <!--  <xsl:key name="rule-by-name" match="css:rule" use="@name"/>-->
   <xsl:key name="by-id" match="*[@id | @xml:id]" use="@id | @xml:id"/>
+  <xsl:key name="style-by-name" match="css:rule" use="@name"/>
   <xsl:key name="link-by-anchor" match="ref | link | ptr" use="@target"/>
   
   <!-- identity template -->
